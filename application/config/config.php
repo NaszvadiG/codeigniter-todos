@@ -23,7 +23,8 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 | a PHP script and you can easily do that on your own.
 |
 */
-$config['base_url'] = 'http://localhost/codeigniter-todos/';
+$config['base_url'] = 'http://localhost/index.php/codeigniter-todos/';
+$config['assets_url'] = 'http://localhost/codeigniter-todos/assets/';
 
 /*
 |--------------------------------------------------------------------------

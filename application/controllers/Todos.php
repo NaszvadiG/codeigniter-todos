@@ -20,8 +20,10 @@ class Todos extends CI_Controller {
         $this->template->set_title_desc('A list of todos');
         $this->template->add_meta('description', 'This is a really cool list of todos.');
         $this->template->add_meta('keywords', 'todos, list');
-        //configure page specific functionality
-        //$todos = [[1, 'Fix lawnmower', 'done'], [2, 'Take out trash', 'done']];
+        
+        //$this->template->add_js('main.js');
+        $this->template->add_css('css/main.css');
+        
         $query = $this->Todo->db->query('SELECT * FROM todos');
 
         $data['todos'] = $query->result();
@@ -45,13 +47,12 @@ class Todos extends CI_Controller {
 
         $todo = null;
         //if there is something in the post
-        if ($this->input->post()) {           
+        if ($this->input->post()) {
             $this->form_validation->set_rules(array(
                 array('field' => 'title',
                     'label' => 'Title',
                     'rules' => 'required')
             ));
-
             //check to see if form validates
             if ($this->form_validation->run()) {//validates
                 //if adding a new Todo
@@ -60,11 +61,19 @@ class Todos extends CI_Controller {
                 );
                 if (!$id) {
                     //'add' functionality
-                    $this->Todo->db->insert('todos', $data);
+                    if ($this->Todo->db->insert('todos', $data)) {
+                        $this->session->set_flashdata('success', 'Todo successfully added');
+                    } else {
+                        $this->session->set_flashdata('error', 'There was a problem adding the Todo');
+                    }
                 } else {//if editing an existing todo
                     //'edit' functionality 
                     $this->Todo->db->where('id', $id);
-                    $this->Todo->db->update('todos', $data);
+                    if ($this->Todo->db->update('todos', $data)) {
+                        $this->session->set_flashdata('success', 'Todo successfully updated');
+                    } else {
+                        $this->session->set_flashdata('error', 'There was a problem updating the Todo');
+                    }
                 }
                 redirect('/todos', 'refresh');
             } else {//doesn't validate
@@ -72,7 +81,6 @@ class Todos extends CI_Controller {
                 $todo->title = $this->input->post('title');
             }
         } else {
-
             if (!$id) {//coming to page to add
                 $todo = new Todo();
                 $todo->title = '';
